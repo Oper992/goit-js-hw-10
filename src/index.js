@@ -46,6 +46,8 @@ const render = array => {
 const countryInformation = e => {
   const value = e.target.value.trim();
   if (!value) {
+    ref.ul.innerHTML = '';
+    ref.div.innerHTML = '';
     return;
   }
   fetchCountries(value)
