@@ -12,39 +12,48 @@ const ref = {
 
 const render = array => {
   if (array.length === 1) {
-    const arrayLanguages = Object.values(array.languages);
+    ref.ul.innerHTML = '';
+    const arrayLanguages = array.map(({ languages }) => Object.values(languages).join(', '));
 
     ref.div.innerHTML = array
       .map(({ flags, name, capital, population }) => {
-        return `<h1><img src="${flags.svg}" width = "30px" >${name.official}</h1>
-        <p>Capital: ${capital}
-        Population: ${population}
-        Languages: </p>`;
+        return `<h1><img class = "country-info-img" src="${flags.svg}" >${name.official}</h1>
+        <ul>
+        <li class = "country-info-item"><b>Capital:</b> ${capital}</li>
+        <li class = "country-info-item"><b>Population:</b> ${population}</li>
+        <li class = "country-info-item"><b>Languages:</b> ${arrayLanguages}</li>
+        </ul>`;
       })
       .join('');
-    console.log(...arrayLanguages);
+    // console.log(arrayLanguages);
   }
-  if (array.length >= 2 && array.length <= 10) {
+  if (array.length > 1 && array.length <= 10) {
+    ref.div.innerHTML = '';
+
     ref.ul.innerHTML = array
       .map(({ flags, name }) => {
-        return `<li class = "country-item"><img src="${flags.svg}" width = "30px" >${name.common}</li>`;
+        return `<li class = "country-item"><img class = "country-item-img" src="${flags.svg}" >${name.common}</li>`;
       })
       .join('');
-    console.log(array);
+    // console.log(array);
   }
   if (array.length > 10) {
+    ref.ul.innerHTML = '';
     Notiflix.Notify.info('Too many matches found. Please enter a more specific name.');
   }
 };
 
-const infoRendering = e => {
+const countryInformation = e => {
   const value = e.target.value.trim();
-  ref.ul.innerHTML = '';
-  ref.div.innerHTML = '';
-
+  if (!value) {
+    return;
+  }
   fetchCountries(value)
     .then(array => render(array))
-    .catch(error => console.log(error));
+    .catch(error => {
+      console.log(error);
+      Notiflix.Notify.failure('Oops, there is no country with that name.');
+    });
 };
 
-ref.input.addEventListener('input', debounce(infoRendering, DEBOUNCE_DELAY));
+ref.input.addEventListener('input', debounce(countryInformation, DEBOUNCE_DELAY));
